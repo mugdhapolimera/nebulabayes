@@ -1,0 +1,3 @@
+Parameter,Galaxy Name,Estimate,CI68_low,CI68_high,CI95_low,CI95_high,Est_in_CI68?,Est_in_CI95?,Est_at_lower?,Est_at_upper?,P(lower),P(upper),P(lower)>50%?,P(upper)>50%?,n_local_maxima,Index_of_peak
+LOGQ,rs0124,7.29387,7.22906,7.38749,7.16424,7.48832,Y,Y,N,N,0.00000,0.00000,N,N,1,44
+LOGZ,rs0124,-0.41100,-0.52967,-0.35166,-0.60878,-0.24618,Y,Y,N,N,0.00000,0.00000,N,N,1,135

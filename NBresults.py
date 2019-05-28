@@ -15,9 +15,9 @@ from mpl_toolkits.mplot3d import Axes3D
 from scipy.stats import norm
 os.chdir('C:/Users/mugdhapolimera/github/nebulabayes/')
 
-results = pd.read_csv("results_bpass_agn_full_interp_SEL/RESOLVE_param_estimates.csv")
+results = pd.read_csv("resolve_bpass_full_nicholls+jenkins/RESOLVE_param_estimates.csv")
 #inputfile = 'C:/Users/mugdhapolimera/github/izi/RESOLVE_SDSS_full.pkl'
-inputfile = 'C:/Users/mugdhapolimera/github/SDSS_Spectra/RESOLVE_filter.pkl'
+inputfile = 'C:/Users/mugdhapolimera/github/SDSS_Spectra/RESOLVE_filter_new.pkl'
 
 infile = pd.read_pickle(inputfile)
 #inputfile = 'C:\Users\mugdhapolimera\Desktop\UNC\Courses\Research\Codes\RESOLVE_SDSS_dext.fits'
@@ -27,7 +27,7 @@ infile = pd.read_pickle(inputfile)
 Z_index = (results['Parameter'] == 'LOGZ')
 results_Z = results[Z_index]
 results_Z.index = results_Z['Galaxy Name'] #range(len(results_Z))
-results_Z["Estimate"] = results_Z["Estimate"]
+results_Z["Estimate"] = results_Z["Estimate"]+8.76
 
 agn_index = (results['Parameter'] == 'AGNFRAC')
 results_agn = results[agn_index]

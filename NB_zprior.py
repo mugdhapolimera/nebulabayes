@@ -19,7 +19,7 @@ import matplotlib.pyplot as plt
 # By default save the output files in the NebulaBayes/docs subdirectory,
 # assuming this file is still in that directory.
 DOCS_PATH = os.path.dirname(os.path.realpath(__file__))
-OUT_DIR = DOCS_PATH+"/resolve_nicholls_bpt1filter_SEL/"
+OUT_DIR = DOCS_PATH+"/res+eco_bpass_full_nichollsjen/"
 time_start = time.time()
 
 def zprior(logmstar):
@@ -68,12 +68,13 @@ def mz(m):
     return DF_grid
 '''
 #############################################################################
-interp_shape = [50,50]  # Number of interpolated points along each dimension
+#interp_shape = [50,50,50] # Number of interpolated points along each dimension
 # Specify non-dereddened HII region emisson lines and fluxes  
-inputfile = 'C:/Users/mugdhapolimera/github/SDSS_Spectra/RESOLVE_bpt1_filter.pkl'
+#inputfile = 'C:/Users/mugdhapolimera/github/SDSS_Spectra/RESOLVE_bpt1filter_new.pkl'
+inputfile = 'C:/Users/mugdhapolimera/github/SDSS_Spectra/ECO+RESOLVE_filter_new.pkl'
 #inputfile = "C:/Users/mugdhapolimera/github/SDSS_Spectra/ECO_bpt1filter.pkl"
-#inputfile = 'C:/Users/mugdhapolimera/github/SDSS_Spectra/RESOLVE_filter.pkl'
-#inputfile = 'C:/Users/mugdhapolimera/github/SDSS_Spectra/ECO_filter.pkl'
+#inputfile = 'C:/Users/mugdhapolimera/github/SDSS_Spectra/RESOLVE_filter_new.pkl'
+#inputfile = 'C:/Users/mugdhapolimera/github/SDSS_Spectra/ECO_filter_new.pkl'
 
 infile = pd.read_pickle(inputfile)
 
@@ -132,6 +133,7 @@ errornames = {'oii3726' : 'Flux_OII_3726_Err',
 
 
 # Initialise the NB_Model, which loads and interpolates the model flux grids:
+os.chdir("C:/Users/mugdhapolimera/github/izi/")
 #gridfile = r'C:\Users\mugdhapolimera\github\izi\Richardson_bpass_binary_csf_n1e2_40Myr.fits'
 #gridfile = r'C:/Users/mugdhapolimera/github/izi/richardson_agnfrac-0-1_binary_csf_n1e2_40.0Myr_lines.fits'
 #gridfile = r'C:/Users/mugdhapolimera/github/izi/richardson_agnfrac-0-1_binary_csf_n1e2_40.0Myr_newgrid.fits'
@@ -142,13 +144,17 @@ errornames = {'oii3726' : 'Flux_OII_3726_Err',
 #gridfile = r'C:/Users/mugdhapolimera/github/izi/richardson_agnfrac-0-1_STB99secular_csf_n1e2_5.0Myr_new2.fits'
 #gridfile = r'C:/Users/mugdhapolimera/github/izi/richardson_agnfrac-0-1_BPASSbinary_csf_n1e2_40.0Myr-GrovesDep.fits'
 #gridfile = r'C:/Users/mugdhapolimera/github/izi/richardson_agnfrac-0-1_BPASSbinary_csf_n1e2_40.0Myr-GrovesDepNoN.fits'
-gridfile = r'C:/Users/mugdhapolimera/github/izi/Richardson-0-0_1-0agn-BPASS-Binary-CSF-n=1e2-40.0Myr-NichollsCE.fits'
-#grid = pd.read_csv(gridfile)
+gridfile = r'Richardson-0-0_1-0agn-BPASS-Binary-CSF-n=1e2-40.0Myr-NichollsCE.csv'
+#gridfile = 'Richardson-0-0_1-0agn-BPASS-Binary-CSF-n=1e2-40.0Myr-NichollsCE-D_G-RR14_Fstar_0_3.csv'
+
+#gridfile = r'C:/Users/mugdhapolimera/github/izi/Richardson-0-0sf_1-0agn-BPASS-Binary-CSF-n=1e2-40.0Myr-NichollsCE-density.fits'
+#gridfile = r'C:/Users/mugdhapolimera/github/izi/Richardson-0-0_1-0agn-BPASS-Binary-CSF-n=1e2-40.0Myr-NichollsCE-F0-5.csv'
+grid = pd.read_csv(gridfile)
 #gridfile = r'C:/Users/mugdhapolimera/github/izi/richardson_bpass_secular_csf_n1e2_10_0Myr.fits'
-grid0 = Table.read(gridfile, format='fits')
-grid = grid0.to_pandas()
-grid['LOGZ'] += 8.76
-grid = grid[grid["AGNFRAC"] == 0]
+#grid0 = Table.read(gridfile, format='fits')
+#grid = grid0.to_pandas()
+#grid['LOGZ'] += 8.76
+#grid = grid[grid["AGNFRAC"] == 0]
 grid = grid[(grid["LOGQ"] > 6.9) & (grid["LOGQ"] < 8.9)]
 
 logzprior = zprior(infile.logmstar)
@@ -234,7 +240,10 @@ for gal in range(len(infile['NAME'])):
             #    obs_errs.append((infile[errornames[i]][gal]**2 + infile['sii_6731_flux_err'][gal]**2)**0.5)
             #else:   
             obs_fluxes.append(infile[fluxnames[linelist_full[i]]][gal])
-            obs_errs.append(infile[errornames[linelist_full[i]]][gal])
+            if np.isnan(infile[errornames[linelist_full[i]]][gal]):
+                obs_errs.append(0.0)
+            else:
+                obs_errs.append(infile[errornames[linelist_full[i]]][gal])
             linelist.append(linelist_full[i])
             
             #wavelengths.append(wavelength_list[i])
@@ -245,14 +254,14 @@ for gal in range(len(infile['NAME'])):
 #    NB_Model_HII = NB_Model(gridfile, grid_params = ["LOGZ", "LOGQ"], 
 #                    line_list = linelist, interpd_grid_shape=interp_shape, 
 #                    grid_error=0.5)
-    NB_Model_HII = NB_Model(grid, grid_params = ["LOGZ", "LOGQ"], #, "AGNFRAC"], 
-                 line_list = linelist, grid_error=0.5)
-    #interpd_grid_shape=interp_shape,
+    NB_Model_HII = NB_Model(grid, grid_params = ["AGNFRAC", "LOGZ", "LOGQ"],  
+                 line_list = linelist, grid_error=0.5,interpd_grid_shape=[50,50,50]) 
+                 
     kwargs = {#"prior_plot": os.path.join(OUT_DIR, infile['NAME'][gal]+"_prior_plot.pdf"),
           #"likelihood_plot": os.path.join(OUT_DIR, infile['NAME'][gal]+"likelihood_plot.pdf"),
           #"posterior_plot": os.path.join(OUT_DIR, infile['NAME'][gal]+"posterior_plot.pdf"),
           "estimate_table": os.path.join(OUT_DIR, "RESOLVE_param_estimates.csv"),
-          "best_model_table": os.path.join(OUT_DIR, "RESOLVE_best_model.csv"),
+          #"best_model_table": os.path.join(OUT_DIR, infile['NAME'].iloc[gal]+".csv"),
           #"deredden": True,  # Match model Balmer decrement everywhere in grid
           #"obs_wavelengths": wavelengths,  # Needed for dereddening
           "norm_line": 'hbeta',  # Obs and model fluxes normalised to Hbeta

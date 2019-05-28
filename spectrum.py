@@ -13,7 +13,7 @@ def gauss(A,mu,sigma,color):
     x = np.linspace(mu-5*sigma, mu+5*sigma, 100)    
     plt.plot(x,A*np.exp(-np.power(x - mu, 2.) / (2 * np.power(sigma, 2.))), color = color)
 
-df = pd.read_csv(r'C:\Anaconda2\Lib\site-packages\NebulaBayes\docs\results_bpass_agn_snr\RESOLVE_best_model.csv',sep=",")
+df = pd.read_csv(r'C:\Users\mugdhapolimera\github\izi\Richardson-0-0_1-0agn-BPASS-Binary-CSF-n=1e2-40.0Myr-NichollsCE-D_G-RR14_Fstar_0_3.csv')
 linelist = {'oii3726': 3726, 'oii3729':3729, 
                  'neiii3869':3869, 'oiii4363':4363, 'hgamma':4340, 
                  'hbeta':4861, 'heii4685':4685, 'ariv4711':4711,
@@ -21,6 +21,18 @@ linelist = {'oii3726': 3726, 'oii3729':3729,
                  'oi6300':6300, 'nii6548':6548, 'halpha':6563, 
                  'nii6584':6584, 'sii6717':6717, 'sii6731':6731, 
                  'ariii7136':7136}
+color = {0: 'b', 0.5: 'r', 1: 'g'}
+plt.figure() 
+for frac in [0, 1.0]:
+    data = df[(df['AGNFRAC']== frac) & (df['LOGZ']== np.log10(1.0)) & 
+              (df['LOGQ']== 7.977)]    
+    
+    plt.xlabel('Wavelength')
+    plt.ylabel('Flux')
+    for key in linelist.keys():
+        gauss(float(data[key]), linelist[key]+(frac*50), 10, color[frac])
+
+
 #HeII selected AGN but with 0% AGN fraction
 #names = ['rf0058',
 # 'rf0110',
@@ -35,19 +47,19 @@ linelist = {'oii3726': 3726, 'oii3729':3729,
 # 'rs1197',
 # 'rs1210',
 # 'rs1294']
-names = ['rs1191']#, 'rs1197']
-for name in names:
-    gal = df[df['Galaxy Name'] == name]
-    gal.index = range(len(gal))
-    noise = gal['Obs']/gal['Obs_S/N']
-    print gal
-    plt.figure()   
-    plt.title(gal['Galaxy Name'][0])
-    plt.xlabel('Wavelength')
-    plt.ylabel('Flux')
-    for i in range(1,len(gal)):
-        gauss(gal['Obs'][i], linelist[gal['Line'][i]], noise[i], 'b')
-        gauss(gal['Model'][i], linelist[gal['Line'][i]]+10, 0.1,'r')
+#names = ['rs1191']#, 'rs1197']
+#for name in names:
+#    gal = df[df['Galaxy Name'] == name]
+#    gal.index = range(len(gal))
+#    noise = gal['Obs']/gal['Obs_S/N']
+#    print gal
+#    plt.figure()   
+#    plt.title(gal['Galaxy Name'][0])
+#    plt.xlabel('Wavelength')
+#    plt.ylabel('Flux')
+#    for i in range(1,len(gal)):
+#        gauss(gal['Obs'][i], linelist[gal['Line'][i]], noise[i], 'b')
+#        gauss(gal['Model'][i], linelist[gal['Line'][i]]+10, 0.1,'r')
 
 #Artificially converging to lowest possible Z
 names = ['rf0028',
