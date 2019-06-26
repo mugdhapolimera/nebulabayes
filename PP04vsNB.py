@@ -17,7 +17,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 #rdat = pd.read_pickle("C:/Users/mugdhapolimera/github/SDSS_Spectra/ECO_bpt1filter.pkl")
-rdat = pd.read_pickle("C:/Users/mugdhapolimera/github/SDSS_Spectra/RESOLVE_bpt1_filter.pkl")
+rdat = pd.read_pickle("C:/Users/mugdhapolimera/github/SDSS_Spectra/RESOLVE_bpt1filter_new.pkl")
 # a simple Te method calib. is the NII/Halpha PP04, for ???2.5 < N2 < ???0.3
 # Pettini & Pagel 2004
 
@@ -59,11 +59,11 @@ PP04_12logOH_v2[selbd] = (-99.)
 #                                                                                         "Estimate", "err_up", "err_down"])
 #iziout = np.genfromtxt("C:/Users/mugdhapolimera/github/SDSS_Spectra/RESOLVE_bpass_bpt1filter_SEL_grovesdep.txt", dtype = None, names = ["name", 
 #                                                                                         "Estimate", "err_up", "err_down"])
-iziout = np.genfromtxt("C:/Users/mugdhapolimera/github/SDSS_Spectra/RESOLVE_nicholls_bpt1filter_SEL.txt", dtype = None, names = ["name", 
+iziout = np.genfromtxt("C:/Users/mugdhapolimera/github/SDSS_Spectra/RESOLVE_bpass_csf_groves.txt", dtype = None, names = ["name", 
                                                                                          "Estimate", "err_up", "err_down"])
-
-iziout2 = np.genfromtxt("C:/Users/mugdhapolimera/github/SDSS_Spectra/RESOLVE_bpass_bpt1filter_SEL_groves_jen.txt", dtype = None, names = ["name", 
-                                                                                         "Estimate", "err_down", "err_up"])
+iziout2 = iziout
+#iziout2 = np.genfromtxt("C:/Users/mugdhapolimera/github/SDSS_Spectra/RESOLVE_bpass_bpt1filter_SEL_groves_jen.txt", dtype = None, names = ["name", 
+#                                                                                         "Estimate", "err_down", "err_up"])
 matchi = np.arange(913)
 #np.where(i for i in range(len(iziout)) if rdat.name[i] in iziout["name"])
 #PP04_12logOH
@@ -78,7 +78,7 @@ y_solar_20 = 8.76+np.log10(0.2)*np.ones(len(x_solar))
 fig = plt.figure()
 ax1 = fig.add_subplot(111)
 ax2 = ax1.twiny()
-ax1.plot(PP04_12logOH, iziout["Estimate"], 'ko', alpha = 0.25)
+ax1.plot(PP04_12logOH, iziout["Estimate"]+8.76, 'ko', alpha = 0.25)
 ax1.set_xlim(7.4,9)
 ax1.set_ylim(7.4,9)
 ax1.plot(x_solar, y_solar_40,'b')
@@ -99,12 +99,10 @@ float_formatter = lambda x: "%.2f" % x
 xticks = np.array([7.8, 8.0, 8.2, 8.4, 8.6, 8.8, 9.0])
 N2 = 1.754*xticks - 15.614
 N2_label = ["%.2f" % z for z in N2]
-<<<<<<< HEAD
 ax2.set_xticklabels(N2_label)
 
 fig = plt.figure()
 ax1 = fig.add_subplot(111)
-=======
 N2_20 = 1.754*(np.log10(0.2)+8.76) - 15.614
 N2_30 = 1.754*(np.log10(0.3)+8.76) - 15.614
 N2_40 = 1.754*(np.log10(0.4)+8.76) - 15.614
@@ -143,10 +141,8 @@ size = fig.get_size_inches()*fig.dpi
 ax1.set_title('(b)', y = -0.15)
 
 ax1 = fig.add_subplot(121)
->>>>>>> e822faa7233d07eaed16d018b6ba44eed4db7eaf
 ax2 = ax1.twiny()
 ax1.plot(PP04_12logOH, iziout2["Estimate"], 'bo', alpha = 0.25)
-<<<<<<< HEAD
 ax1.set_xlim(7.4,9)
 ax1.set_ylim(7.4,9)
 ax1.plot(x_solar, y_solar_40,'k')
@@ -160,7 +156,6 @@ ax1.set_ylabel("12 + log(O/H)  [NB + Chris-STB99]")
 ax1.set_xlabel("12 + log(O/H)  [PP04]")
 ax2.set_xlabel("N2 (NII/H-alpha)")
 ax1.plot(np.arange(7.4,11),np.arange(7.4,11), "r")
-=======
 ax1.set_xlim(7.8,9)
 ax1.set_ylim(7.8,9)
 ax1.plot(x_solar, y_solar_40,'k-.', linewidth = 2)
@@ -183,6 +178,5 @@ ax1.text(y_solar_40[0]-0.05, 8.9, r'[NII]/H$\alpha$ = ' + "%0.2f" % N2_40,
 ax1.set_ylabel("12 + log(O/H)  (using grid with Hydrogen Density)", size = 15)
 ax1.set_xlabel(r"12 + log(O/H)  (using [NII]/H$\alpha$)", size = 15)
 ax2.set_xlabel(r"[NII]/H$\alpha$", size = 15)
->>>>>>> e822faa7233d07eaed16d018b6ba44eed4db7eaf
 #ax1.plot(np.arange(7.7,11),np.arange(-1.3,0.5), "r")
 ax2.set_xticklabels(N2_label)

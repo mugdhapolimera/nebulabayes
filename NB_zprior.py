@@ -19,7 +19,7 @@ import matplotlib.pyplot as plt
 # By default save the output files in the NebulaBayes/docs subdirectory,
 # assuming this file is still in that directory.
 DOCS_PATH = os.path.dirname(os.path.realpath(__file__))
-OUT_DIR = DOCS_PATH+"/res+eco_bpass_full_nichollsjen/"
+OUT_DIR = DOCS_PATH+"/res_bpass_nicholls_csf/"
 time_start = time.time()
 
 def zprior(logmstar):
@@ -70,8 +70,8 @@ def mz(m):
 #############################################################################
 #interp_shape = [50,50,50] # Number of interpolated points along each dimension
 # Specify non-dereddened HII region emisson lines and fluxes  
-#inputfile = 'C:/Users/mugdhapolimera/github/SDSS_Spectra/RESOLVE_bpt1filter_new.pkl'
-inputfile = 'C:/Users/mugdhapolimera/github/SDSS_Spectra/ECO+RESOLVE_filter_new.pkl'
+inputfile = 'C:/Users/mugdhapolimera/github/SDSS_Spectra/RESOLVE_bpt1filter_new.pkl'
+#inputfile = 'C:/Users/mugdhapolimera/github/SDSS_Spectra/ECO+RESOLVE_filter_new.pkl'
 #inputfile = "C:/Users/mugdhapolimera/github/SDSS_Spectra/ECO_bpt1filter.pkl"
 #inputfile = 'C:/Users/mugdhapolimera/github/SDSS_Spectra/RESOLVE_filter_new.pkl'
 #inputfile = 'C:/Users/mugdhapolimera/github/SDSS_Spectra/ECO_filter_new.pkl'
@@ -146,7 +146,8 @@ os.chdir("C:/Users/mugdhapolimera/github/izi/")
 #gridfile = r'C:/Users/mugdhapolimera/github/izi/richardson_agnfrac-0-1_BPASSbinary_csf_n1e2_40.0Myr-GrovesDepNoN.fits'
 gridfile = r'Richardson-0-0_1-0agn-BPASS-Binary-CSF-n=1e2-40.0Myr-NichollsCE.csv'
 #gridfile = 'Richardson-0-0_1-0agn-BPASS-Binary-CSF-n=1e2-40.0Myr-NichollsCE-D_G-RR14_Fstar_0_3.csv'
-
+#gridfile = 'Richardson-0-0_1-0agn-BPASS-Binary-SSP-n=1e2-1.0Myr-NichollsCE-D_G-RR14_Fstar_0_3.csv'
+#gridfile = 'Richardson-0-0_1-0agn-BPASS-Binary-SSP-n=1e2-20Myr-NichollsCE-D_G-RR14_Fstar_0_3.csv'
 #gridfile = r'C:/Users/mugdhapolimera/github/izi/Richardson-0-0sf_1-0agn-BPASS-Binary-CSF-n=1e2-40.0Myr-NichollsCE-density.fits'
 #gridfile = r'C:/Users/mugdhapolimera/github/izi/Richardson-0-0_1-0agn-BPASS-Binary-CSF-n=1e2-40.0Myr-NichollsCE-F0-5.csv'
 grid = pd.read_csv(gridfile)
@@ -154,7 +155,7 @@ grid = pd.read_csv(gridfile)
 #grid0 = Table.read(gridfile, format='fits')
 #grid = grid0.to_pandas()
 #grid['LOGZ'] += 8.76
-#grid = grid[grid["AGNFRAC"] == 0]
+grid = grid[grid["AGNFRAC"] == 0]
 grid = grid[(grid["LOGQ"] > 6.9) & (grid["LOGQ"] < 8.9)]
 
 logzprior = zprior(infile.logmstar)
@@ -254,8 +255,8 @@ for gal in range(len(infile['NAME'])):
 #    NB_Model_HII = NB_Model(gridfile, grid_params = ["LOGZ", "LOGQ"], 
 #                    line_list = linelist, interpd_grid_shape=interp_shape, 
 #                    grid_error=0.5)
-    NB_Model_HII = NB_Model(grid, grid_params = ["AGNFRAC", "LOGZ", "LOGQ"],  
-                 line_list = linelist, grid_error=0.5,interpd_grid_shape=[50,50,50]) 
+    NB_Model_HII = NB_Model(grid, grid_params = ["LOGZ", "LOGQ"],  
+                 line_list = linelist, grid_error=0.5)#,interpd_grid_shape=[50,50]) 
                  
     kwargs = {#"prior_plot": os.path.join(OUT_DIR, infile['NAME'][gal]+"_prior_plot.pdf"),
           #"likelihood_plot": os.path.join(OUT_DIR, infile['NAME'][gal]+"likelihood_plot.pdf"),
@@ -279,4 +280,15 @@ for gal in range(len(infile['NAME'])):
 
 time_end = time.time()
 print ("Total time for {} galaxies is {}".format(len(infile['NAME']), time_end - time_start))
-
+res = pd.read_csv(OUT_DIR+'/RESOLVE_param_estimates.csv')
+res = res[res['Parameter'] == 'LOGZ']
+res.index = range(len(res))
+#res['CI68_low'] = res['CI68_low'].replace(['#NAME?'], float(-1000000000))
+#print type(res['CI68_low'][289])
+err_down = np.zeros(len(res))
+for i in range(1,len(res),2):
+    err_down[i] = float(res['Estimate'][i]) - float(res['CI68_low'][i])
+    res_text = np.column_stack((res['Galaxy Name'],res['Estimate'],res['CI68_high']-res['Estimate'], err_down)) 
+#res['Estimate']-res['CI68_low']))
+print (res_text)
+np.savetxt('C:/Users/mugdhapolimera/github/SDSS_Spectra/RESOLVE_bpass_csf_nicholls.txt',res_text, fmt = '%s %f %f %f')
